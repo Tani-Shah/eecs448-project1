@@ -5,6 +5,16 @@ using namespace std;
 game::game()
 {
     m_gameOver = false;
+    m_tempX = 0;
+    m_tempY = 0;
+    m_player1 = nullptr;
+    m_player2 = nullptr;
+
+    m_clearScreenString = "";
+    for(int i=0; i<70;i++)//we construct this string once, that way we don't have to run the loop
+    {//every time we want to clear the screen
+        m_clearScreenString += "\n";
+    }
 }
 game::~game()
 {
@@ -15,6 +25,22 @@ game::~game()
 void game::play()
 {
     setUp();
+    while(m_gameOver == false)
+    {
+        fullTurn();
+    }
+    closingScreen();
+}
+void game::testPlay()//creates 2 players with 3 ships each
+{//ships are placed in upper left corner of the board horizontally
+    m_player1 = new player("p1", 3);
+    m_player2 = new player("p2", 3);
+    for(int i=0; i < 3; i++)
+    {
+        m_player1 -> buildAndPlaceShip(i, true, 0, i);
+        m_player2 -> buildAndPlaceShip(i, true, 0, i);
+    }
+
     while(m_gameOver == false)
     {
         fullTurn();
@@ -47,6 +73,7 @@ void game::setUpIO()
     cin>> shipCount0;
     m_player2 = new player(name0, stoi(shipCount0));
 }
+
 void game::shipIO(player* p)
 {
     int ASCII_OFFSET = 65;
@@ -65,7 +92,8 @@ void game::shipIO(player* p)
         cin>> coordinatesTemp;
         
         xLocTemp = (int)toupper(coordinatesTemp[0]) - ASCII_OFFSET;
-        yLocTemp = stoi(to_string((coordinatesTemp[1])) ) - 1;
+        coordinatesTemp.erase(0,1);
+        yLocTemp = stoi(coordinatesTemp) - 1;
 
         p -> buildAndPlaceShip(i+1, (orientationInputTemp == "H"), xLocTemp, yLocTemp);
     }
@@ -92,22 +120,46 @@ void game::fullTurn()
 }
 void game::turnIO(player* p)
 {
-//check for valid input using player.shoot() method
+    int ASCII_OFFSET = 65;
+    int xLocTemp, yLocTemp;
+    string coordinatesTemp = "";
+    
+    cout<< p -> printBoard();
+    cout << "Please enter a letter (A-J), followed by number (1-10): ";
+    
+    xLocTemp = (int)toupper(coordinatesTemp[0]) - ASCII_OFFSET;
+    coordinatesTemp.erase(0,1);
+    yLocTemp = stoi(coordinatesTemp) - 1;
+    p->
 }
 void game::closingScreen()
 {
+    if( m_player1->loserCheck() == true)
+    {
+        cout << "Congratulations " << m_player2->getName() << ", you have won!\n\n";
+    }
+    else
+    {
+        cout << "Congratulations " << m_player1->getName() << ", you have won!\n\n";
+    }
 
+    cout << "       _      _\n";
+    cout << "      (_)    | |\n";
+    cout << "__   ___  ___| |_ ___  _ __ _   _\n";
+    cout << "\ \ / / |/ __| __/ _ \| '__| | | |\n";
+    cout << " \ V /| | (__| || (_) | |  | |_| |\n";
+    cout << "  \_/ |_|\___|\__\___/|_|   \__, |\n";
+    cout << "                             __/ |\n";
+    cout << "                            |___/\n";
 }
+
 void game::clearScreen()
 {
-    std::string s = "";
-    for(int i=0; i<70;i++)
-    {
-        s += "\n";
-    }
-    std::cout<<s;
+    std::cout<<m_clearScreenString;
 }
 void game::switchPlayerPrompt()
 {
-
+    std::string dummy;
+    std::cout<<"\nPress enter when the next player is ready: ";
+    std::getline(std::cin, dummy);
 }
